@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import HabitModal from "@/components/HabitModal";
 import GardenView from "@/components/GardenView";
+import PixelEmoji from "@/components/PixelEmoji";
 import { currentStreak, harvestProgress, todayKey, hasDoneCurrentPeriod } from "@/lib/growth";
 import type { HabitWithDates } from "@/lib/types";
 
@@ -140,7 +141,7 @@ export default function Home() {
 
         {habits && habits.length === 0 && (
           <div className="bubble-card p-8 text-center max-w-md mx-auto flex flex-col items-center gap-3">
-            <span className="text-4xl">🌱</span>
+            <PixelEmoji emoji="🌱" size={40} />
             <h2 className="text-base">Your farm is empty</h2>
             <p className="text-sm text-[var(--ink-soft)]">
               Plant your first habit and check back in — it grows every time you log it.
@@ -185,7 +186,7 @@ export default function Home() {
 function StatPill({ emoji, value, label }: { emoji: string; value: string | number; label: string }) {
   return (
     <div className="bubble-card px-3 py-3 flex flex-col items-center gap-0.5">
-      <span className="text-xl">{emoji}</span>
+      <span><PixelEmoji emoji={emoji} size={22} /></span>
       <span className="text-lg font-extrabold">{value}</span>
       <span className="text-[11px] text-[var(--ink-soft)] text-center leading-tight">{label}</span>
     </div>

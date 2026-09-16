@@ -26,7 +26,7 @@ Access it here: https://habitat-sigma-nine.vercel.app/
 - **Tailwind CSS v4**
 - **PostgreSQL** via `postgres` (postgres-js) + **Drizzle ORM** — works with any Postgres, including a free [Neon](https://neon.tech) project
 - Auth: `bcryptjs` for password hashing, `jose` for signed session cookies — no third-party auth service
-- Self-hosted Google Font (`Baloo 2`) via `@fontsource`
+- Self-hosted Google Fonts (`Pixelify Sans` for body text, `Press Start 2P` for the title) via `@fontsource` — every emoji in the UI is re-rendered pixel-art style through a small canvas, not shown as a plain glyph
 
 ## Getting started
 

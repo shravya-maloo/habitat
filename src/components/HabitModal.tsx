@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { HabitColor, Frequency, HabitWithDates } from "@/lib/types";
 import { FREQUENCY_LABEL } from "@/lib/growth";
 import { FLOWER_TYPES } from "@/lib/flowers";
+import PixelEmoji from "@/components/PixelEmoji";
 
 const COLORS: { key: HabitColor; label: string; swatch: string }[] = [
   { key: "leaf", label: "Leaf", swatch: "var(--leaf)" },
@@ -82,7 +83,9 @@ export default function HabitModal({
         onSubmit={handleSubmit}
         className="bubble-card pop-in w-full max-w-sm p-6 flex flex-col gap-4"
       >
-        <h2 className="text-lg">{isEdit ? "🌿 Edit habit" : "🌿 New habit"}</h2>
+        <h2 className="text-lg flex items-center justify-center gap-2">
+          <PixelEmoji emoji="🌿" size={20} /> {isEdit ? "Edit habit" : "New habit"}
+        </h2>
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-bold" htmlFor="habit-name">
@@ -112,7 +115,7 @@ export default function HabitModal({
                   background: emoji === f.emoji ? "var(--sun)" : "var(--paper)",
                 }}
               >
-                <span className="text-xl">{f.emoji}</span>
+                <PixelEmoji emoji={f.emoji} size={22} label={f.label} />
                 <span className="text-[10px] font-semibold">{f.label}</span>
               </button>
             ))}
@@ -175,7 +178,15 @@ export default function HabitModal({
             className="bubble-btn flex-1 py-2 text-sm disabled:opacity-60"
             style={{ background: "var(--leaf-bright)" }}
           >
-            {submitting ? "Saving…" : isEdit ? "Save changes" : "Plant it 🌱"}
+            {submitting ? (
+              "Saving…"
+            ) : isEdit ? (
+              "Save changes"
+            ) : (
+              <span className="inline-flex items-center gap-1.5">
+                Plant it <PixelEmoji emoji="🌱" size={16} />
+              </span>
+            )}
           </button>
         </div>
 
@@ -187,7 +198,9 @@ export default function HabitModal({
                 onClick={() => setConfirmingDelete(true)}
                 className="text-xs font-semibold text-[var(--ink-soft)] hover:text-[var(--berry)] pt-2"
               >
-                🗑️ Remove habit
+                <span className="inline-flex items-center gap-1">
+                  <PixelEmoji emoji="🗑️" size={14} /> Remove habit
+                </span>
               </button>
             ) : (
               <div className="flex items-center gap-2 pt-2 text-xs">

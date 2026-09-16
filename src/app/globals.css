@@ -34,13 +34,13 @@ body {
     var(--bg);
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat, no-repeat;
   color: var(--ink);
-  font-family: "Baloo 2", system-ui, sans-serif;
+  font-family: "Pixelify Sans", system-ui, sans-serif;
   min-height: 100dvh;
 }
 
 h1, h2, h3 {
-  font-family: "Baloo 2", system-ui, sans-serif;
-  font-weight: 800;
+  font-family: "Pixelify Sans", system-ui, sans-serif;
+  font-weight: 700;
 }
 
 .pixel-title {

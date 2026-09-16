@@ -3,6 +3,7 @@
 import { useRef, useState, useCallback } from "react";
 import PlantSVG from "./PlantSVG";
 import PetalBurst from "./PetalBurst";
+import PixelEmoji from "./PixelEmoji";
 import { currentStreak, harvestProgress, streakLabel, hasDoneCurrentPeriod } from "@/lib/growth";
 import { flowerTypeFromEmoji } from "@/lib/flowers";
 import type { HabitWithDates } from "@/lib/types";
@@ -178,20 +179,22 @@ export default function GardenView({
                   }
                 }}
                 aria-label={progress.ready ? "Harvest" : "Mark done today"}
-                className="absolute -top-1 -right-1 w-7 h-7 rounded-full grid place-items-center text-xs bubble-btn"
+                className="absolute -top-3 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full grid place-items-center bubble-btn"
                 style={{
                   background: progress.ready ? "var(--sun)" : doneThisPeriod ? "var(--leaf-bright)" : "var(--paper)",
                 }}
               >
-                {progress.ready ? "🧺" : doneThisPeriod ? "✅" : "💧"}
+                <PixelEmoji emoji={progress.ready ? "🧺" : doneThisPeriod ? "✅" : "💧"} size={16} />
               </button>
 
               {hovered === h.id && !isDragging && (
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full z-20 bubble-card px-3 py-1.5 whitespace-nowrap text-left pop-in">
-                  <p className="text-xs font-bold">
-                    {h.emoji} {h.name}
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 -translate-y-full z-20 bubble-card px-3 py-1.5 whitespace-nowrap text-left pop-in">
+                  <p className="text-xs font-bold flex items-center gap-1">
+                    <PixelEmoji emoji={h.emoji} size={14} /> {h.name}
                   </p>
-                  <p className="text-[11px] text-[var(--ink-soft)]">🔥 {streakLabel(streak, h.frequency)}</p>
+                  <p className="text-[11px] text-[var(--ink-soft)] flex items-center gap-1">
+                    <PixelEmoji emoji="🔥" size={12} /> {streakLabel(streak, h.frequency)}
+                  </p>
                   <p className="text-[11px] font-bold" style={{ color: "var(--ink-soft)" }}>
                     Tap to edit · hold + drag to move
                   </p>
@@ -203,7 +206,7 @@ export default function GardenView({
 
         <div
           ref={trashRef}
-          className="absolute bottom-3 right-3 w-14 h-14 rounded-full grid place-items-center text-2xl"
+          className="absolute bottom-3 right-3 w-14 h-14 rounded-full grid place-items-center"
           style={{
             background: overTrash ? "var(--berry)" : "var(--paper)",
             border: "3px solid rgba(43,33,64,0.15)",
@@ -213,11 +216,17 @@ export default function GardenView({
             boxShadow: overTrash ? "0 0 0 6px rgba(255,93,162,0.25)" : "none",
           }}
         >
-          🗑️
+          <PixelEmoji emoji="🗑️" size={28} />
         </div>
       </div>
-      <p className="text-center text-xs text-[var(--ink-soft)] py-2 font-semibold">
-        Tap a flower to edit it · hold + drag to move it, or drop it on 🗑️ to remove · tap 💧 / 🧺 to log progress
+      <p className="text-center text-xs text-[var(--ink-soft)] py-2 font-semibold flex flex-wrap items-center justify-center gap-1">
+        <span>Tap a flower to edit it · hold + drag to move it, or drop it on</span>
+        <PixelEmoji emoji="🗑️" size={14} />
+        <span>to remove · tap</span>
+        <PixelEmoji emoji="💧" size={14} />
+        <span>/</span>
+        <PixelEmoji emoji="🧺" size={14} />
+        <span>to log progress</span>
       </p>
     </div>
   );
