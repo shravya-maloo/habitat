@@ -1,16 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import HabitCard from "@/components/HabitCard";
-import AddHabitModal from "@/components/AddHabitModal";
+import HabitModal from "@/components/HabitModal";
 import GardenView from "@/components/GardenView";
 import { currentStreak, harvestProgress, todayKey, hasDoneCurrentPeriod } from "@/lib/growth";
 import type { HabitWithDates } from "@/lib/types";
 
 export default function Home() {
   const [habits, setHabits] = useState<HabitWithDates[] | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const [view, setView] = useState<"cards" | "garden">("cards");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<HabitWithDates | null>(null);
 
   useEffect(() => {
     fetch("/api/habits")
@@ -32,39 +31,49 @@ export default function Home() {
     return { total: habits.length, doneToday, longestStreak, readyToHarvest };
   }, [habits]);
 
-  function handleToggle(id: number, nowCompleted: boolean) {
-    setHabits((prev) =>
-      prev
-        ? prev.map((h) => {
-            if (h.id !== id) return h;
-            const today = todayKey();
-            const dates = nowCompleted
-              ? [...h.dates, today]
-              : h.dates.filter((d) => d !== today);
-            return { ...h, dates };
-          })
-        : prev
-    );
+  async function handleToggleToday(id: number) {
+    try {
+      const res = await fetch(`/api/habits/${id}/toggle`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      setHabits((prev) =>
+        prev
+          ? prev.map((h) => {
+              if (h.id !== id) return h;
+              const today = todayKey();
+              const dates = data.completed ? [...h.dates, today] : h.dates.filter((d) => d !== today);
+              return { ...h, dates };
+            })
+          : prev
+      );
+    } catch {
+      // best-effort; the badge just won't update if this fails
+    }
   }
 
   async function handleDelete(id: number) {
     setHabits((prev) => (prev ? prev.filter((h) => h.id !== id) : prev));
-    await fetch(`/api/habits/${id}`, { method: "DELETE" });
+    await fetch(`/api/habits/${id}`, { method: "DELETE" }).catch(() => {});
   }
 
   function handleCreated(newHabit: unknown) {
     setHabits((prev) => (prev ? [...prev, newHabit as HabitWithDates] : [newHabit as HabitWithDates]));
   }
 
+  function handleSaved(updated: HabitWithDates) {
+    setHabits((prev) => (prev ? prev.map((h) => (h.id === updated.id ? { ...h, ...updated } : h)) : prev));
+  }
+
   async function handleHarvest(id: number) {
-    // Optimistically bump the count so the plant resets to a seed right away.
     setHabits((prev) =>
       prev ? prev.map((h) => (h.id === id ? { ...h, harvestedCount: h.harvestedCount + 1 } : h)) : prev
     );
     try {
       const res = await fetch(`/api/habits/${id}/harvest`, { method: "POST" });
       if (!res.ok) {
-        // Wasn't actually ready (race condition) — revert.
         setHabits((prev) =>
           prev ? prev.map((h) => (h.id === id ? { ...h, harvestedCount: h.harvestedCount - 1 } : h)) : prev
         );
@@ -89,7 +98,7 @@ export default function Home() {
     <main className="flex-1 flex flex-col items-center px-4 py-8 sm:py-12">
       <header className="w-full max-w-5xl flex flex-col items-center text-center gap-2 mb-8">
         <h1
-          className="text-4xl sm:text-5xl tracking-tight"
+          className="pixel-title text-2xl sm:text-3xl"
           style={{
             backgroundImage:
               "linear-gradient(90deg, var(--berry), var(--coral), var(--sun), var(--leaf-dark), var(--sky), var(--grape))",
@@ -114,62 +123,51 @@ export default function Home() {
         </div>
       )}
 
-      {habits && habits.length > 0 && (
-        <div className="w-full max-w-5xl flex justify-center gap-2 mb-6">
-          <button
-            onClick={() => setView("cards")}
-            className="bubble-btn px-4 py-1.5 text-sm"
-            style={{ background: view === "cards" ? "var(--leaf-bright)" : "var(--paper)" }}
-          >
-            🃏 Cards
-          </button>
-          <button
-            onClick={() => setView("garden")}
-            className="bubble-btn px-4 py-1.5 text-sm"
-            style={{ background: view === "garden" ? "var(--leaf-bright)" : "var(--paper)" }}
-          >
-            🌾 My Farm
-          </button>
-        </div>
-      )}
-
       <section className="w-full max-w-5xl">
         {habits === null && (
-          <p className="text-center text-[var(--ink-soft)] font-bold text-sm py-16">Loading your garden…</p>
+          <p className="text-center text-[var(--ink-soft)] font-bold text-sm py-16">Loading your farm…</p>
         )}
 
         {habits && habits.length === 0 && (
           <div className="bubble-card p-8 text-center max-w-md mx-auto flex flex-col items-center gap-3">
             <span className="text-4xl">🌱</span>
-            <h2 className="text-base">Your garden is empty</h2>
+            <h2 className="text-base">Your farm is empty</h2>
             <p className="text-sm text-[var(--ink-soft)]">
-              Plant your first habit and check back in daily — it grows with your streak.
+              Plant your first habit and check back in — it grows every time you log it.
             </p>
           </div>
         )}
 
-        {habits && habits.length > 0 && view === "garden" && (
-          <GardenView habits={habits} onHarvest={handleHarvest} onMove={handleMove} />
-        )}
-
-        {habits && habits.length > 0 && view === "cards" && (
-          <div className="flex flex-wrap gap-4 justify-center">
-            {habits.map((h) => (
-              <HabitCard key={h.id} habit={h} onToggle={handleToggle} onDelete={handleDelete} />
-            ))}
-          </div>
+        {habits && habits.length > 0 && (
+          <GardenView
+            habits={habits}
+            onHarvest={handleHarvest}
+            onMove={handleMove}
+            onDelete={handleDelete}
+            onEdit={setEditingHabit}
+            onToggleToday={handleToggleToday}
+          />
         )}
       </section>
 
       <button
-        onClick={() => setShowModal(true)}
+        onClick={() => setShowAddModal(true)}
         className="bubble-btn fixed bottom-6 right-6 px-5 py-3 text-sm z-30"
         style={{ background: "var(--sun)" }}
       >
         + Plant a habit
       </button>
 
-      {showModal && <AddHabitModal onClose={() => setShowModal(false)} onCreated={handleCreated} />}
+      {showAddModal && <HabitModal onClose={() => setShowAddModal(false)} onCreated={handleCreated} />}
+
+      {editingHabit && (
+        <HabitModal
+          editHabit={editingHabit}
+          onClose={() => setEditingHabit(null)}
+          onSaved={handleSaved}
+          onDelete={handleDelete}
+        />
+      )}
     </main>
   );
 }

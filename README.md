@@ -4,15 +4,15 @@ Habitat turns your habits into a garden. Every time you check off a habit, its p
 
 ## Features
 
+- 🌾 **Farm view only** — one interactive scene with every plant in it; no separate card list, this is the whole app
 - 🪴 Create habits with a flower type (sunflower, rose, tulip, daisy, lotus, hibiscus — each with its own distinct bloom shape), a petal color, and a frequency (daily / weekly / every 2 weeks / monthly)
-- 💧 One-tap "mark done" for today, toggle it back off if you misclick
+- Interaction model in the farm: **tap a flower to edit it**, **hold and drag to move it**, **drop it on the 🗑️ to remove it** — a small 💧/🧺 badge on each flower logs today's completion or harvests it, kept separate so it never conflicts with editing or dragging
 - 🔥 Live current streak + all-time best streak, measured in the habit's own unit (days, weeks, biweekly periods, or months)
 - 🌱 Each plant grows through 6 visual stages as you rack up completions — every 5 completions (all-time) fully grows it
-- 🧺 **Harvesting** — once a plant is fully grown, tap it in My Farm to harvest it: petals rain across the screen and the plant resets to a seed to start its next growth cycle
-- 🌾 **My Farm view** — a draggable farm scene with every plant in it; drag any plant to rearrange your farm, position is saved automatically
+- 🧺 **Harvesting** — once a plant is fully grown, tap its badge to harvest it: petals rain across the screen and the plant resets to a seed to start its next growth cycle
 - 📊 Garden-wide stats: total plants, on track today, longest active streak, ready to harvest
 - 🗑️ Soft-delete habits (archived, not destroyed — history is preserved)
-- Bright, colorful, bubbly UI, fully responsive
+- Bright, colorful, bubbly UI with a grass-textured background, fully responsive
 
 ## Tech stack
 

@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  /* Vibrant, candy-bright palette */
-  --bg: #fff7e8;
-  --bg-deep: #ffe8b8;
+  /* Vibrant, candy-bright, green-forward palette */
+  --bg: #eef9df;
+  --bg-deep: #cdedaa;
   --ink: #2b2140;
-  --ink-soft: #6b5c8f;
+  --ink-soft: #5c6b3f;
   --leaf: #3ddc84;
   --leaf-dark: #1fb769;
   --leaf-bright: #7cf7ae;
@@ -23,12 +23,16 @@
 }
 
 body {
-  background:
-    radial-gradient(circle at 8% 12%, rgba(255, 93, 162, 0.16), transparent 34%),
-    radial-gradient(circle at 92% 6%, rgba(62, 198, 255, 0.18), transparent 32%),
-    radial-gradient(circle at 50% 100%, rgba(61, 220, 132, 0.16), transparent 45%),
-    radial-gradient(circle at 85% 60%, rgba(182, 103, 241, 0.12), transparent 40%),
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle at 10% 8%, rgba(61, 220, 132, 0.35), transparent 38%),
+    radial-gradient(circle at 90% 4%, rgba(255, 203, 61, 0.28), transparent 34%),
+    radial-gradient(circle at 6% 92%, rgba(31, 183, 105, 0.32), transparent 42%),
+    radial-gradient(circle at 95% 88%, rgba(62, 198, 255, 0.2), transparent 36%),
+    radial-gradient(circle at 55% 50%, rgba(255, 93, 162, 0.12), transparent 55%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M4 48 Q6 34 3 24' stroke='%2346b56a' stroke-width='2.4' fill='none' stroke-linecap='round' opacity='0.35'/%3E%3Cpath d='M13 48 Q16 32 12 20' stroke='%233a9f5b' stroke-width='2.4' fill='none' stroke-linecap='round' opacity='0.3'/%3E%3Cpath d='M23 48 Q25 36 22 26' stroke='%2350c073' stroke-width='2.2' fill='none' stroke-linecap='round' opacity='0.32'/%3E%3Cpath d='M33 48 Q36 33 31 22' stroke='%233a9f5b' stroke-width='2.4' fill='none' stroke-linecap='round' opacity='0.3'/%3E%3Cpath d='M42 48 Q44 35 40 25' stroke='%2346b56a' stroke-width='2.2' fill='none' stroke-linecap='round' opacity='0.34'/%3E%3C/svg%3E"),
     var(--bg);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat, no-repeat;
   color: var(--ink);
   font-family: "Baloo 2", system-ui, sans-serif;
   min-height: 100dvh;
@@ -37,6 +41,12 @@ body {
 h1, h2, h3 {
   font-family: "Baloo 2", system-ui, sans-serif;
   font-weight: 800;
+}
+
+.pixel-title {
+  font-family: "Press Start 2P", monospace;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
 }
 
 /* Bubbly building blocks: soft, colorful, rounded, no hard pixel edges. */

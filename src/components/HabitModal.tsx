@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { HabitColor, Frequency } from "@/lib/types";
+import type { HabitColor, Frequency, HabitWithDates } from "@/lib/types";
 import { FREQUENCY_LABEL } from "@/lib/growth";
 import { FLOWER_TYPES } from "@/lib/flowers";
 
@@ -14,19 +14,28 @@ const COLORS: { key: HabitColor; label: string; swatch: string }[] = [
 ];
 const FREQUENCIES: Frequency[] = ["daily", "weekly", "biweekly", "monthly"];
 
-export default function AddHabitModal({
+export default function HabitModal({
+  editHabit,
   onClose,
   onCreated,
+  onSaved,
+  onDelete,
 }: {
+  editHabit?: HabitWithDates;
   onClose: () => void;
-  onCreated: (habit: unknown) => void;
+  onCreated?: (habit: unknown) => void;
+  onSaved?: (habit: HabitWithDates) => void;
+  onDelete?: (id: number) => void;
 }) {
-  const [name, setName] = useState("");
-  const [emoji, setEmoji] = useState(FLOWER_TYPES[0].emoji);
-  const [color, setColor] = useState<HabitColor>("leaf");
-  const [frequency, setFrequency] = useState<Frequency>("daily");
+  const isEdit = !!editHabit;
+
+  const [name, setName] = useState(editHabit?.name ?? "");
+  const [emoji, setEmoji] = useState(editHabit?.emoji ?? FLOWER_TYPES[0].emoji);
+  const [color, setColor] = useState<HabitColor>(editHabit?.color ?? "leaf");
+  const [frequency, setFrequency] = useState<Frequency>(editHabit?.frequency ?? "daily");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,8 +46,10 @@ export default function AddHabitModal({
     setSubmitting(true);
     setError(null);
     try {
-      const res = await fetch("/api/habits", {
-        method: "POST",
+      const url = isEdit ? `/api/habits/${editHabit!.id}` : "/api/habits";
+      const method = isEdit ? "PATCH" : "POST";
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, emoji, color, frequency }),
       });
@@ -47,11 +58,18 @@ export default function AddHabitModal({
         setError(data.error ?? "Something went wrong.");
         return;
       }
-      onCreated(data);
+      if (isEdit) onSaved?.({ ...editHabit!, ...data });
+      else onCreated?.(data);
       onClose();
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function handleDelete() {
+    if (!editHabit || !onDelete) return;
+    onDelete(editHabit.id);
+    onClose();
   }
 
   return (
@@ -64,7 +82,7 @@ export default function AddHabitModal({
         onSubmit={handleSubmit}
         className="bubble-card pop-in w-full max-w-sm p-6 flex flex-col gap-4"
       >
-        <h2 className="text-lg">🌿 New habit</h2>
+        <h2 className="text-lg">{isEdit ? "🌿 Edit habit" : "🌿 New habit"}</h2>
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-bold" htmlFor="habit-name">
@@ -157,9 +175,42 @@ export default function AddHabitModal({
             className="bubble-btn flex-1 py-2 text-sm disabled:opacity-60"
             style={{ background: "var(--leaf-bright)" }}
           >
-            {submitting ? "Planting…" : "Plant it 🌱"}
+            {submitting ? "Saving…" : isEdit ? "Save changes" : "Plant it 🌱"}
           </button>
         </div>
+
+        {isEdit && onDelete && (
+          <div className="pt-1 border-t border-[var(--bg-deep)] flex justify-center">
+            {!confirmingDelete ? (
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(true)}
+                className="text-xs font-semibold text-[var(--ink-soft)] hover:text-[var(--berry)] pt-2"
+              >
+                🗑️ Remove habit
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 pt-2 text-xs">
+                <span className="font-semibold">Remove this habit?</span>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="bubble-btn px-3 py-1"
+                  style={{ background: "var(--berry)" }}
+                >
+                  Yes, remove
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmingDelete(false)}
+                  className="font-semibold text-[var(--ink-soft)]"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </form>
     </div>
   );
