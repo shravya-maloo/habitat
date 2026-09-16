@@ -21,32 +21,6 @@ Built as a fast, self-contained habit tracker: no sign-up, no external services 
 - **PostgreSQL** via `postgres` (postgres-js) + **Drizzle ORM** — works with any Postgres, including a free [Neon](https://neon.tech) project
 - Self-hosted Google Fonts (`Press Start 2P`, `Baloo 2`) via `@fontsource`
 
-## Getting started
-
-1. Create a Postgres database. The easiest free option is [Neon](https://neon.tech) — sign up, create a project, and copy its connection string.
-2. Copy `.env.example` to `.env.local` and paste your connection string as `DATABASE_URL`.
-3. Install and run:
-
-```bash
-npm install
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000). Tables are created automatically on first request — no manual migration step.
-
-### Production build
-
-```bash
-npm run build
-npm run start
-```
-
-### Deploying (Vercel)
-
-1. Push this repo to GitHub (already done if you're reading this on GitHub).
-2. Import the repo at [vercel.com/new](https://vercel.com/new).
-3. Add an environment variable `DATABASE_URL` (your Neon connection string — use the pooled connection string if Neon offers one, it's built for serverless).
-4. Deploy. No other config needed.
 
 ## Project structure
 
