@@ -2,6 +2,8 @@
 
 Habitat turns your habits into a garden. Every time you check off a habit, its plant grows a little more — six stages from a bare seed to an ancient, blooming tree. Miss a period and the plant just waits; your streak resets, but nothing is ever deleted.
 
+Access it here: https://habitat-sigma-nine.vercel.app/
+
 ## Features
 
 - 🌾 **Farm view only** — one interactive scene with every plant in it; no separate card list, this is the whole app
