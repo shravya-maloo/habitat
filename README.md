@@ -4,7 +4,7 @@ Habitat turns your habits into a garden. Every time you check off a habit, its p
 
 ## Features
 
-- 🪴 Create habits with a custom icon, bloom color, and frequency (daily / weekly / every 2 weeks / monthly)
+- 🪴 Create habits with a flower type (sunflower, rose, tulip, daisy, lotus, hibiscus — each with its own distinct bloom shape), a petal color, and a frequency (daily / weekly / every 2 weeks / monthly)
 - 💧 One-tap "mark done" for today, toggle it back off if you misclick
 - 🔥 Live current streak + all-time best streak, measured in the habit's own unit (days, weeks, biweekly periods, or months)
 - 🌱 Each plant grows through 6 visual stages as you rack up completions — every 5 completions (all-time) fully grows it

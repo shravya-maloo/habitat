@@ -12,6 +12,7 @@ import {
   streakLabel,
   FREQUENCY_LABEL,
 } from "@/lib/growth";
+import { flowerTypeFromEmoji } from "@/lib/flowers";
 import type { HabitWithDates } from "@/lib/types";
 
 const VARIANT_ACCENT: Record<string, string> = {
@@ -94,7 +95,7 @@ export default function HabitCard({
       </span>
 
       <div className={`w-28 h-32 ${progress.stage > 0 ? "sway" : ""} ${progress.ready ? "bob" : ""}`}>
-        <PlantSVG stage={progress.stage} variant={habit.color} className="w-full h-full" />
+        <PlantSVG stage={progress.stage} variant={habit.color} flower={flowerTypeFromEmoji(habit.emoji)} className="w-full h-full" />
       </div>
 
       <h3 className="font-bold text-center text-[15px] leading-tight break-words w-full">

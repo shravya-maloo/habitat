@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db, ensureReady } from "@/db";
 import { habits, completions } from "@/db/schema";
 import { asc, eq } from "drizzle-orm";
+import { FLOWER_TYPES } from "@/lib/flowers";
 
 export async function GET() {
   await ensureReady();
@@ -22,7 +23,7 @@ export async function GET() {
 }
 
 const COLORS = ["leaf", "sun", "berry", "sky", "grape"];
-const EMOJIS = ["🌱", "💧", "📚", "🏃", "🧘", "🎨", "🎵", "🥗", "😴", "✍️"];
+const EMOJIS = FLOWER_TYPES.map((f) => f.emoji);
 const FREQUENCIES = ["daily", "weekly", "biweekly", "monthly"];
 
 export async function POST(req: NextRequest) {
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Keep it under 40 characters" }, { status: 400 });
   }
 
-  const emoji = EMOJIS.includes(body?.emoji) ? body.emoji : "🌱";
+  const emoji = EMOJIS.includes(body?.emoji) ? body.emoji : FLOWER_TYPES[0].emoji;
   const color = COLORS.includes(body?.color) ? body.color : COLORS[Math.floor(Math.random() * COLORS.length)];
   const frequency = FREQUENCIES.includes(body?.frequency) ? body.frequency : "daily";
 

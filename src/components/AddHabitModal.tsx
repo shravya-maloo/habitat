@@ -3,8 +3,8 @@
 import { useState } from "react";
 import type { HabitColor, Frequency } from "@/lib/types";
 import { FREQUENCY_LABEL } from "@/lib/growth";
+import { FLOWER_TYPES } from "@/lib/flowers";
 
-const EMOJIS = ["🌱", "💧", "📚", "🏃", "🧘", "🎨", "🎵", "🥗", "😴", "✍️"];
 const COLORS: { key: HabitColor; label: string; swatch: string }[] = [
   { key: "leaf", label: "Leaf", swatch: "var(--leaf)" },
   { key: "sun", label: "Sun", swatch: "var(--sun)" },
@@ -22,7 +22,7 @@ export default function AddHabitModal({
   onCreated: (habit: unknown) => void;
 }) {
   const [name, setName] = useState("");
-  const [emoji, setEmoji] = useState("🌱");
+  const [emoji, setEmoji] = useState(FLOWER_TYPES[0].emoji);
   const [color, setColor] = useState<HabitColor>("leaf");
   const [frequency, setFrequency] = useState<Frequency>("daily");
   const [error, setError] = useState<string | null>(null);
@@ -82,26 +82,27 @@ export default function AddHabitModal({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <span className="text-sm font-bold">Icon</span>
-          <div className="flex flex-wrap gap-2">
-            {EMOJIS.map((e) => (
+          <span className="text-sm font-bold">Flower</span>
+          <div className="grid grid-cols-3 gap-2">
+            {FLOWER_TYPES.map((f) => (
               <button
                 type="button"
-                key={e}
-                onClick={() => setEmoji(e)}
-                className="w-9 h-9 rounded-full grid place-items-center text-lg soft-outline"
+                key={f.key}
+                onClick={() => setEmoji(f.emoji)}
+                className="soft-outline rounded-2xl py-2 flex flex-col items-center gap-0.5"
                 style={{
-                  background: emoji === e ? "var(--sun)" : "var(--paper)",
+                  background: emoji === f.emoji ? "var(--sun)" : "var(--paper)",
                 }}
               >
-                {e}
+                <span className="text-xl">{f.emoji}</span>
+                <span className="text-[10px] font-semibold">{f.label}</span>
               </button>
             ))}
           </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <span className="text-sm font-bold">Bloom color</span>
+          <span className="text-sm font-bold">Petal color</span>
           <div className="flex gap-2">
             {COLORS.map((c) => (
               <button

@@ -4,6 +4,7 @@ import { useRef, useState, useCallback } from "react";
 import PlantSVG from "./PlantSVG";
 import PetalBurst from "./PetalBurst";
 import { currentStreak, harvestProgress, streakLabel } from "@/lib/growth";
+import { flowerTypeFromEmoji } from "@/lib/flowers";
 import type { HabitWithDates } from "@/lib/types";
 
 const CLICK_THRESHOLD_PX = 6;
@@ -121,7 +122,7 @@ export default function GardenView({
               }}
             >
               <div className={`relative ${progress.stage > 0 ? "sway" : ""} ${progress.ready ? "bob" : ""}`}>
-                <PlantSVG stage={progress.stage} variant={h.color} className="w-full h-auto pointer-events-none" />
+                <PlantSVG stage={progress.stage} variant={h.color} flower={flowerTypeFromEmoji(h.emoji)} className="w-full h-auto pointer-events-none" />
                 {progress.ready && (
                   <span className="absolute -top-2 -right-1 text-lg pointer-events-none">✨</span>
                 )}
