@@ -10,5 +10,8 @@ export type HabitWithDates = {
   createdAt: string;
   archived: boolean;
   sortOrder: number;
+  harvestedCount: number;
+  posX: number;
+  posY: number;
   dates: string[];
 };

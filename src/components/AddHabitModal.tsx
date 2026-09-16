@@ -77,7 +77,7 @@ export default function AddHabitModal({
             onChange={(e) => setName(e.target.value)}
             placeholder="Drink water, read 10 pages..."
             maxLength={40}
-            className="pixel-outline rounded-2xl px-3 py-2 bg-[var(--bg)] outline-none focus:ring-2 focus:ring-[var(--leaf)]"
+            className="soft-outline rounded-2xl px-3 py-2 bg-[var(--bg)] outline-none focus:ring-2 focus:ring-[var(--leaf)]"
           />
         </div>
 
@@ -89,7 +89,7 @@ export default function AddHabitModal({
                 type="button"
                 key={e}
                 onClick={() => setEmoji(e)}
-                className="w-9 h-9 rounded-full grid place-items-center text-lg pixel-outline"
+                className="w-9 h-9 rounded-full grid place-items-center text-lg soft-outline"
                 style={{
                   background: emoji === e ? "var(--sun)" : "var(--paper)",
                 }}
@@ -109,7 +109,7 @@ export default function AddHabitModal({
                 key={c.key}
                 aria-label={c.label}
                 onClick={() => setColor(c.key)}
-                className="w-8 h-8 rounded-full pixel-outline"
+                className="w-8 h-8 rounded-full soft-outline"
                 style={{
                   background: c.swatch,
                   outline: color === c.key ? "3px solid var(--ink)" : "none",
@@ -128,7 +128,7 @@ export default function AddHabitModal({
                 type="button"
                 key={f}
                 onClick={() => setFrequency(f)}
-                className="pixel-outline rounded-2xl px-2 py-1.5 text-sm font-semibold"
+                className="soft-outline rounded-2xl px-2 py-1.5 text-sm font-semibold"
                 style={{
                   background: frequency === f ? "var(--leaf-bright)" : "var(--paper)",
                 }}

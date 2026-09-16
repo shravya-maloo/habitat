@@ -51,6 +51,8 @@ export async function POST(req: NextRequest) {
       color,
       frequency,
       sortOrder: existing.length,
+      posX: 15 + Math.random() * 70,
+      posY: 20 + Math.random() * 55,
     })
     .returning();
 

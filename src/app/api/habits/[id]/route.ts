@@ -27,6 +27,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (typeof body?.frequency === "string" && ["daily", "weekly", "biweekly", "monthly"].includes(body.frequency)) {
     updates.frequency = body.frequency;
   }
+  if (typeof body?.posX === "number" && Number.isFinite(body.posX)) {
+    updates.posX = Math.max(0, Math.min(100, body.posX));
+  }
+  if (typeof body?.posY === "number" && Number.isFinite(body.posY)) {
+    updates.posY = Math.max(0, Math.min(100, body.posY));
+  }
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "Nothing to update" }, { status: 400 });

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "@fontsource/press-start-2p/400.css";
 import "@fontsource/baloo-2/500.css";
 import "@fontsource/baloo-2/600.css";
 import "@fontsource/baloo-2/700.css";
@@ -9,7 +8,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Habitat — grow a habit, grow a garden",
   description:
-    "Habitat turns your daily habits into a garden. Keep your streak alive and watch each habit grow from a seed into a thriving plant.",
+    "Habitat turns your habits into a garden. Keep your streak alive, watch each habit grow, and harvest it when it's fully bloomed.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

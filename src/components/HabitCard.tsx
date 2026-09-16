@@ -5,7 +5,8 @@ import PlantSVG from "./PlantSVG";
 import {
   currentStreak,
   bestStreak,
-  growthStage,
+  harvestProgress,
+  stageLabel,
   todayKey,
   hasDoneCurrentPeriod,
   streakLabel,
@@ -35,7 +36,7 @@ export default function HabitCard({
 
   const streak = currentStreak(habit.dates, habit.frequency);
   const best = bestStreak(habit.dates, habit.frequency);
-  const { stage, label, nextAt } = growthStage(streak, habit.frequency);
+  const progress = harvestProgress(habit.dates.length, habit.harvestedCount);
   const doneToday = habit.dates.includes(todayKey());
   const doneThisPeriod = hasDoneCurrentPeriod(habit.dates, habit.frequency);
   const accent = VARIANT_ACCENT[habit.color] ?? VARIANT_ACCENT.leaf;
@@ -81,18 +82,19 @@ export default function HabitCard({
       )}
 
       <span
-        className="text-[10px] pixel-text px-2 py-1 rounded-full self-start"
+        className="text-[11px] font-bold px-2.5 py-1 rounded-full self-start"
         style={{ background: accent, color: "var(--ink)" }}
       >
-        {habit.emoji} {label}
+        {habit.emoji} {stageLabel(progress.stage)}
       </span>
 
       <span className="text-[11px] text-[var(--ink-soft)] font-semibold self-start -mt-1">
         {FREQUENCY_LABEL[habit.frequency]}
+        {habit.harvestedCount > 0 && ` · 🧺 ${habit.harvestedCount}`}
       </span>
 
-      <div className={`w-28 h-32 ${streak > 0 ? "sway" : ""}`}>
-        <PlantSVG stage={stage} variant={habit.color} className="w-full h-full" />
+      <div className={`w-28 h-32 ${progress.stage > 0 ? "sway" : ""} ${progress.ready ? "bob" : ""}`}>
+        <PlantSVG stage={progress.stage} variant={habit.color} className="w-full h-full" />
       </div>
 
       <h3 className="font-bold text-center text-[15px] leading-tight break-words w-full">
@@ -104,9 +106,13 @@ export default function HabitCard({
         <span>🏆 {best}</span>
       </div>
 
-      {nextAt !== null && (
+      {progress.ready ? (
+        <p className="text-[11px] font-bold -mt-1" style={{ color: "var(--berry)" }}>
+          🎉 Ready to harvest in My Farm!
+        </p>
+      ) : (
         <p className="text-[11px] text-[var(--ink-soft)] -mt-1">
-          {streakLabel(nextAt - streak, habit.frequency)} to next stage
+          {progress.remaining} more to harvest
         </p>
       )}
 
@@ -114,7 +120,7 @@ export default function HabitCard({
         onClick={handleToggle}
         disabled={busy}
         className="bubble-btn w-full py-2 mt-1 text-sm disabled:opacity-60"
-        style={{ background: doneThisPeriod ? "var(--leaf-bright)" : "var(--paper)" }}
+        style={{ background: doneThisPeriod ? "var(--leaf-bright)" : "var(--sun)" }}
       >
         {habit.frequency === "daily"
           ? doneToday

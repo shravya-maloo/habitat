@@ -185,32 +185,33 @@ export function streakLabel(streak: number, frequency: Frequency): string {
   return `${streak} ${streak === 1 ? unit.singular : unit.plural}`;
 }
 
-export type GrowthStage = {
-  stage: number; // 0-5
-  label: string;
-  nextAt: number | null; // periods needed for next stage, null if maxed
+// --- Harvest cycle -----------------------------------------------------
+// Growth is now cycle-based rather than streak-based: every 5 completions
+// (all-time, any days) grows the plant through the 6 visual stages, and
+// on the 5th it's ready to harvest. Harvesting resets the cycle.
+
+export const COMPLETIONS_PER_HARVEST = 5;
+
+export type HarvestProgress = {
+  stage: number; // 0-5, same scale PlantSVG expects
+  completionsInCycle: number; // 0-5
+  remaining: number; // completions still needed this cycle
+  ready: boolean; // true once completionsInCycle hits 5
 };
 
-// Thresholds are tuned per frequency so growth paces similarly in real time
-// (e.g. "ancient tree" lands around 6-12 weeks of consistency either way).
-const STAGE_THRESHOLDS: Record<Frequency, number[]> = {
-  daily: [0, 2, 5, 10, 21, 45],
-  weekly: [0, 1, 2, 4, 8, 16],
-  biweekly: [0, 1, 2, 3, 5, 8],
-  monthly: [0, 1, 2, 3, 6, 12],
-};
+export function harvestProgress(totalCompletions: number, harvestedCount: number): HarvestProgress {
+  const used = harvestedCount * COMPLETIONS_PER_HARVEST;
+  const completionsInCycle = Math.max(0, Math.min(COMPLETIONS_PER_HARVEST, totalCompletions - used));
+  return {
+    stage: completionsInCycle,
+    completionsInCycle,
+    remaining: COMPLETIONS_PER_HARVEST - completionsInCycle,
+    ready: completionsInCycle >= COMPLETIONS_PER_HARVEST,
+  };
+}
 
-const STAGE_LABELS = ["Seed", "Sprout", "Seedling", "Budding", "Blooming", "Ancient Tree"];
+const STAGE_LABELS = ["Seed", "Sprout", "Seedling", "Budding", "Blooming", "Ready to harvest!"];
 
-export function growthStage(streak: number, frequency: Frequency = "daily"): GrowthStage {
-  const thresholds = STAGE_THRESHOLDS[frequency];
-  let stage = 0;
-  for (let i = thresholds.length - 1; i >= 0; i--) {
-    if (streak >= thresholds[i]) {
-      stage = i;
-      break;
-    }
-  }
-  const next = thresholds[stage + 1] ?? null;
-  return { stage, label: STAGE_LABELS[stage], nextAt: next };
+export function stageLabel(stage: number): string {
+  return STAGE_LABELS[Math.max(0, Math.min(5, stage))];
 }

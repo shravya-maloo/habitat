@@ -32,11 +32,25 @@ async function bootstrap() {
       frequency TEXT NOT NULL DEFAULT 'daily',
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       archived BOOLEAN NOT NULL DEFAULT false,
-      sort_order INTEGER NOT NULL DEFAULT 0
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      harvested_count INTEGER NOT NULL DEFAULT 0,
+      pos_x DOUBLE PRECISION NOT NULL DEFAULT 50,
+      pos_y DOUBLE PRECISION NOT NULL DEFAULT 50
     )
   `;
-  // Backfills the column for databases created before frequency existed.
+  // Backfills for databases created before these columns existed.
   await sql`ALTER TABLE habits ADD COLUMN IF NOT EXISTS frequency TEXT NOT NULL DEFAULT 'daily'`;
+  await sql`ALTER TABLE habits ADD COLUMN IF NOT EXISTS harvested_count INTEGER NOT NULL DEFAULT 0`;
+  await sql`ALTER TABLE habits ADD COLUMN IF NOT EXISTS pos_x DOUBLE PRECISION NOT NULL DEFAULT 50`;
+  await sql`ALTER TABLE habits ADD COLUMN IF NOT EXISTS pos_y DOUBLE PRECISION NOT NULL DEFAULT 50`;
+  // Existing rows created before pos_x/pos_y existed all default to the same
+  // spot (50,50) — scatter them a bit so old farms don't open with every
+  // plant stacked in the center.
+  await sql`
+    UPDATE habits
+    SET pos_x = 15 + (id * 37 % 70), pos_y = 20 + (id * 53 % 60)
+    WHERE pos_x = 50 AND pos_y = 50
+  `;
   await sql`
     CREATE TABLE IF NOT EXISTS completions (
       id SERIAL PRIMARY KEY,

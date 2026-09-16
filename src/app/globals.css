@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  /* Core palette */
-  --bg: #eaf7e2;
-  --bg-deep: #d3edc4;
-  --ink: #1f4d2c;
-  --ink-soft: #3a6b46;
-  --leaf: #4caf6d;
-  --leaf-dark: #2e8b4f;
-  --leaf-bright: #7fdb8f;
-  --sun: #ffc93c;
-  --berry: #ff6f91;
-  --sky: #4fc3e8;
-  --grape: #a06fd6;
-  --paper: #fffdf6;
-  --shadow: #16351f;
+  /* Vibrant, candy-bright palette */
+  --bg: #fff7e8;
+  --bg-deep: #ffe8b8;
+  --ink: #2b2140;
+  --ink-soft: #6b5c8f;
+  --leaf: #3ddc84;
+  --leaf-dark: #1fb769;
+  --leaf-bright: #7cf7ae;
+  --sun: #ffcb3d;
+  --berry: #ff5da2;
+  --sky: #3ec6ff;
+  --grape: #b667f1;
+  --coral: #ff7a5c;
+  --paper: #ffffff;
 }
 
 @theme inline {
@@ -24,72 +24,103 @@
 
 body {
   background:
-    radial-gradient(circle at 15% 10%, rgba(255, 201, 60, 0.18), transparent 40%),
-    radial-gradient(circle at 85% 0%, rgba(79, 195, 232, 0.16), transparent 45%),
+    radial-gradient(circle at 8% 12%, rgba(255, 93, 162, 0.16), transparent 34%),
+    radial-gradient(circle at 92% 6%, rgba(62, 198, 255, 0.18), transparent 32%),
+    radial-gradient(circle at 50% 100%, rgba(61, 220, 132, 0.16), transparent 45%),
+    radial-gradient(circle at 85% 60%, rgba(182, 103, 241, 0.12), transparent 40%),
     var(--bg);
   color: var(--ink);
   font-family: "Baloo 2", system-ui, sans-serif;
   min-height: 100dvh;
 }
 
-h1, h2, h3, .pixel-text {
-  font-family: "Press Start 2P", monospace;
-  letter-spacing: 0.02em;
+h1, h2, h3 {
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-weight: 800;
 }
 
-/* Chunky "game UI" building blocks: thick ink borders + hard offset shadow
-   instead of soft blurred SaaS-card shadows. */
+/* Bubbly building blocks: soft, colorful, rounded, no hard pixel edges. */
 .bubble-card {
   background: var(--paper);
-  border: 3px solid var(--ink);
-  border-radius: 22px;
-  box-shadow: 5px 5px 0 var(--shadow);
+  border: 3px solid rgba(43, 33, 64, 0.08);
+  border-radius: 28px;
+  box-shadow: 0 10px 28px -10px rgba(182, 103, 241, 0.28), 0 3px 10px -2px rgba(43, 33, 64, 0.08);
 }
 
 .bubble-btn {
-  border: 3px solid var(--ink);
+  border: none;
   border-radius: 999px;
-  box-shadow: 4px 4px 0 var(--shadow);
   font-weight: 700;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
-}
-
-.bubble-btn:active {
-  transform: translate(3px, 3px);
-  box-shadow: 1px 1px 0 var(--shadow);
+  box-shadow: 0 6px 16px -4px rgba(43, 33, 64, 0.3);
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease, filter 0.15s ease;
 }
 
 .bubble-btn:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 6px 6px 0 var(--shadow);
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.05);
 }
 
-.pixel-outline {
-  border: 3px solid var(--ink);
-  box-shadow: 3px 3px 0 var(--shadow);
+.bubble-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.soft-outline {
+  border: 2.5px solid rgba(43, 33, 64, 0.15);
+  border-radius: 16px;
 }
 
 @keyframes pop-in {
-  0% { transform: scale(0.85); opacity: 0; }
+  0% { transform: scale(0.8); opacity: 0; }
+  70% { transform: scale(1.05); }
   100% { transform: scale(1); opacity: 1; }
 }
 
 .pop-in {
-  animation: pop-in 0.18s ease-out;
+  animation: pop-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes sway {
-  0%, 100% { transform: rotate(-1.5deg); }
-  50% { transform: rotate(1.5deg); }
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
 }
 
 .sway {
-  animation: sway 3.2s ease-in-out infinite;
+  animation: sway 3s ease-in-out infinite;
   transform-origin: bottom center;
 }
 
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.bob {
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+@keyframes petal-fall {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) translateX(var(--drift, 40px)) rotate(360deg);
+    opacity: 0.9;
+  }
+}
+
+.petal {
+  position: fixed;
+  top: 0;
+  will-change: transform;
+  animation-name: petal-fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .sway, .pop-in {
+  .sway, .pop-in, .bob, .petal {
     animation: none;
   }
 }
@@ -100,5 +131,5 @@ h1, h2, h3, .pixel-text {
 }
 
 * {
-  scrollbar-color: var(--leaf) var(--bg-deep);
+  scrollbar-color: var(--berry) var(--bg-deep);
 }

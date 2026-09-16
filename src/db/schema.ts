@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, boolean, integer, doublePrecision } from "drizzle-orm/pg-core";
 
 export const habits = pgTable("habits", {
   id: serial("id").primaryKey(),
@@ -9,6 +9,9 @@ export const habits = pgTable("habits", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   archived: boolean("archived").notNull().default(false),
   sortOrder: integer("sort_order").notNull().default(0),
+  harvestedCount: integer("harvested_count").notNull().default(0),
+  posX: doublePrecision("pos_x").notNull().default(50),
+  posY: doublePrecision("pos_y").notNull().default(50),
 });
 
 export const completions = pgTable("completions", {

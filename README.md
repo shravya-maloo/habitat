@@ -7,18 +7,19 @@ Habitat turns your habits into a garden. Every time you check off a habit, its p
 - 🪴 Create habits with a custom icon, bloom color, and frequency (daily / weekly / every 2 weeks / monthly)
 - 💧 One-tap "mark done" for today, toggle it back off if you misclick
 - 🔥 Live current streak + all-time best streak, measured in the habit's own unit (days, weeks, biweekly periods, or months)
-- 🌳 Six-stage pixel-art plant growth tied to streak length — thresholds are tuned per frequency so a weekly habit blooms on a similar real-world timeline to a daily one
-- 🌻 **My Garden view** — see every plant growing together in one scene, hover/tap any plant for its name and streak
-- 📊 Garden-wide stats: total plants, on track today, longest active streak, fully bloomed count
+- 🌱 Each plant grows through 6 visual stages as you rack up completions — every 5 completions (all-time) fully grows it
+- 🧺 **Harvesting** — once a plant is fully grown, tap it in My Farm to harvest it: petals rain across the screen and the plant resets to a seed to start its next growth cycle
+- 🌾 **My Farm view** — a draggable farm scene with every plant in it; drag any plant to rearrange your farm, position is saved automatically
+- 📊 Garden-wide stats: total plants, on track today, longest active streak, ready to harvest
 - 🗑️ Soft-delete habits (archived, not destroyed — history is preserved)
-- Bubbly pixel/game-inspired UI, fully responsive
+- Bright, colorful, bubbly UI, fully responsive
 
 ## Tech stack
 
 - **Next.js 16** (App Router, TypeScript)
 - **Tailwind CSS v4**
 - **PostgreSQL** via `postgres` (postgres-js) + **Drizzle ORM** — works with any Postgres, including a free [Neon](https://neon.tech) project
-- Self-hosted Google Fonts (`Press Start 2P`, `Baloo 2`) via `@fontsource`
+- Self-hosted Google Font (`Baloo 2`) via `@fontsource`
 
 ## Project structure
 

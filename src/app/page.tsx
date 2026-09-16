@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import HabitCard from "@/components/HabitCard";
 import AddHabitModal from "@/components/AddHabitModal";
 import GardenView from "@/components/GardenView";
-import { currentStreak, growthStage, todayKey, hasDoneCurrentPeriod } from "@/lib/growth";
+import { currentStreak, harvestProgress, todayKey, hasDoneCurrentPeriod } from "@/lib/growth";
 import type { HabitWithDates } from "@/lib/types";
 
 export default function Home() {
@@ -26,10 +26,10 @@ export default function Home() {
       (max, h) => Math.max(max, currentStreak(h.dates, h.frequency)),
       0
     );
-    const grownPlants = habits.filter(
-      (h) => growthStage(currentStreak(h.dates, h.frequency), h.frequency).stage >= 5
+    const readyToHarvest = habits.filter(
+      (h) => harvestProgress(h.dates.length, h.harvestedCount).ready
     ).length;
-    return { total: habits.length, doneToday, longestStreak, grownPlants };
+    return { total: habits.length, doneToday, longestStreak, readyToHarvest };
   }, [habits]);
 
   function handleToggle(id: number, nowCompleted: boolean) {
@@ -56,13 +56,51 @@ export default function Home() {
     setHabits((prev) => (prev ? [...prev, newHabit as HabitWithDates] : [newHabit as HabitWithDates]));
   }
 
+  async function handleHarvest(id: number) {
+    // Optimistically bump the count so the plant resets to a seed right away.
+    setHabits((prev) =>
+      prev ? prev.map((h) => (h.id === id ? { ...h, harvestedCount: h.harvestedCount + 1 } : h)) : prev
+    );
+    try {
+      const res = await fetch(`/api/habits/${id}/harvest`, { method: "POST" });
+      if (!res.ok) {
+        // Wasn't actually ready (race condition) — revert.
+        setHabits((prev) =>
+          prev ? prev.map((h) => (h.id === id ? { ...h, harvestedCount: h.harvestedCount - 1 } : h)) : prev
+        );
+      }
+    } catch {
+      setHabits((prev) =>
+        prev ? prev.map((h) => (h.id === id ? { ...h, harvestedCount: h.harvestedCount - 1 } : h)) : prev
+      );
+    }
+  }
+
+  function handleMove(id: number, posX: number, posY: number) {
+    setHabits((prev) => (prev ? prev.map((h) => (h.id === id ? { ...h, posX, posY } : h)) : prev));
+    fetch(`/api/habits/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ posX, posY }),
+    }).catch(() => {});
+  }
+
   return (
     <main className="flex-1 flex flex-col items-center px-4 py-8 sm:py-12">
       <header className="w-full max-w-5xl flex flex-col items-center text-center gap-2 mb-8">
-        <h1 className="text-2xl sm:text-3xl" style={{ color: "var(--leaf-dark)" }}>
-          🌻 HABITAT
+        <h1
+          className="text-4xl sm:text-5xl tracking-tight"
+          style={{
+            backgroundImage:
+              "linear-gradient(90deg, var(--berry), var(--coral), var(--sun), var(--leaf-dark), var(--sky), var(--grape))",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            color: "transparent",
+          }}
+        >
+          HABITAT
         </h1>
-        <p className="text-[var(--ink-soft)] font-medium max-w-md">
+        <p className="text-[var(--ink-soft)] font-semibold max-w-md">
           Every day you show up, something grows. Miss a day and it waits patiently — pick it back up whenever you&apos;re ready.
         </p>
       </header>
@@ -72,7 +110,7 @@ export default function Home() {
           <StatPill emoji="🪴" value={stats.total} label="Plants" />
           <StatPill emoji="💧" value={`${stats.doneToday}/${stats.total}`} label="On track" />
           <StatPill emoji="🔥" value={stats.longestStreak} label="Best active streak" />
-          <StatPill emoji="🌳" value={stats.grownPlants} label="Fully bloomed" />
+          <StatPill emoji="🧺" value={stats.readyToHarvest} label="Ready to harvest" />
         </div>
       )}
 
@@ -90,14 +128,14 @@ export default function Home() {
             className="bubble-btn px-4 py-1.5 text-sm"
             style={{ background: view === "garden" ? "var(--leaf-bright)" : "var(--paper)" }}
           >
-            🌻 My Garden
+            🌾 My Farm
           </button>
         </div>
       )}
 
       <section className="w-full max-w-5xl">
         {habits === null && (
-          <p className="text-center text-[var(--ink-soft)] pixel-text text-xs py-16">Loading your garden…</p>
+          <p className="text-center text-[var(--ink-soft)] font-bold text-sm py-16">Loading your garden…</p>
         )}
 
         {habits && habits.length === 0 && (
@@ -110,7 +148,9 @@ export default function Home() {
           </div>
         )}
 
-        {habits && habits.length > 0 && view === "garden" && <GardenView habits={habits} />}
+        {habits && habits.length > 0 && view === "garden" && (
+          <GardenView habits={habits} onHarvest={handleHarvest} onMove={handleMove} />
+        )}
 
         {habits && habits.length > 0 && view === "cards" && (
           <div className="flex flex-wrap gap-4 justify-center">
