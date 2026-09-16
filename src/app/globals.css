@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+:root {
+  /* Core palette */
+  --bg: #eaf7e2;
+  --bg-deep: #d3edc4;
+  --ink: #1f4d2c;
+  --ink-soft: #3a6b46;
+  --leaf: #4caf6d;
+  --leaf-dark: #2e8b4f;
+  --leaf-bright: #7fdb8f;
+  --sun: #ffc93c;
+  --berry: #ff6f91;
+  --sky: #4fc3e8;
+  --grape: #a06fd6;
+  --paper: #fffdf6;
+  --shadow: #16351f;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+}
+
+body {
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255, 201, 60, 0.18), transparent 40%),
+    radial-gradient(circle at 85% 0%, rgba(79, 195, 232, 0.16), transparent 45%),
+    var(--bg);
+  color: var(--ink);
+  font-family: "Baloo 2", system-ui, sans-serif;
+  min-height: 100dvh;
+}
+
+h1, h2, h3, .pixel-text {
+  font-family: "Press Start 2P", monospace;
+  letter-spacing: 0.02em;
+}
+
+/* Chunky "game UI" building blocks: thick ink borders + hard offset shadow
+   instead of soft blurred SaaS-card shadows. */
+.bubble-card {
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 22px;
+  box-shadow: 5px 5px 0 var(--shadow);
+}
+
+.bubble-btn {
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  box-shadow: 4px 4px 0 var(--shadow);
+  font-weight: 700;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.bubble-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--shadow);
+}
+
+.bubble-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 var(--shadow);
+}
+
+.pixel-outline {
+  border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--shadow);
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.pop-in {
+  animation: pop-in 0.18s ease-out;
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(1.5deg); }
+}
+
+.sway {
+  animation: sway 3.2s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sway, .pop-in {
+    animation: none;
+  }
+}
+
+::selection {
+  background: var(--sun);
+  color: var(--ink);
+}
+
+* {
+  scrollbar-color: var(--leaf) var(--bg-deep);
+}
