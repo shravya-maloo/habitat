@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
+import { db, ensureReady } from "@/db";
 import { habits, completions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function PATCH(req: NextRequest, { params }: Params) {
+  await ensureReady();
   const { id } = await params;
   const habitId = Number(id);
   if (!Number.isInteger(habitId)) {
@@ -35,6 +36,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
+  await ensureReady();
   const { id } = await params;
   const habitId = Number(id);
   if (!Number.isInteger(habitId)) {
@@ -55,6 +57,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
 
 // Fully purge a habit and its completion history. Used by the "delete forever" action.
 export async function POST(_req: NextRequest, { params }: Params) {
+  await ensureReady();
   const { id } = await params;
   const habitId = Number(id);
   if (!Number.isInteger(habitId)) {

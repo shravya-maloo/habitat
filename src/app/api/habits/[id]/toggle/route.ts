@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
+import { db, ensureReady } from "@/db";
 import { completions, habits } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { todayKey } from "@/lib/growth";
@@ -7,6 +7,7 @@ import { todayKey } from "@/lib/growth";
 type Params = { params: Promise<{ id: string }> };
 
 export async function POST(req: NextRequest, { params }: Params) {
+  await ensureReady();
   const { id } = await params;
   const habitId = Number(id);
   if (!Number.isInteger(habitId)) {
@@ -29,6 +30,6 @@ export async function POST(req: NextRequest, { params }: Params) {
     return NextResponse.json({ completed: false, date });
   }
 
-  await db.insert(completions).values({ habitId, date, createdAt: new Date().toISOString() });
+  await db.insert(completions).values({ habitId, date });
   return NextResponse.json({ completed: true, date });
 }

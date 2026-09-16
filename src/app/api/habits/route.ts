@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
+import { db, ensureReady } from "@/db";
 import { habits, completions } from "@/db/schema";
 import { asc, eq } from "drizzle-orm";
 
 export async function GET() {
+  await ensureReady();
   const allHabits = await db
     .select()
     .from(habits)
@@ -24,6 +25,7 @@ const COLORS = ["leaf", "sun", "berry", "sky", "grape"];
 const EMOJIS = ["🌱", "💧", "📚", "🏃", "🧘", "🎨", "🎵", "🥗", "😴", "✍️"];
 
 export async function POST(req: NextRequest) {
+  await ensureReady();
   const body = await req.json();
   const name = String(body?.name ?? "").trim();
 
@@ -45,7 +47,6 @@ export async function POST(req: NextRequest) {
       name,
       emoji,
       color,
-      createdAt: new Date().toISOString(),
       sortOrder: existing.length,
     })
     .returning();
