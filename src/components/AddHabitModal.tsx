@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { HabitColor } from "@/lib/types";
+import type { HabitColor, Frequency } from "@/lib/types";
+import { FREQUENCY_LABEL } from "@/lib/growth";
 
 const EMOJIS = ["🌱", "💧", "📚", "🏃", "🧘", "🎨", "🎵", "🥗", "😴", "✍️"];
 const COLORS: { key: HabitColor; label: string; swatch: string }[] = [
@@ -11,6 +12,7 @@ const COLORS: { key: HabitColor; label: string; swatch: string }[] = [
   { key: "sky", label: "Sky", swatch: "var(--sky)" },
   { key: "grape", label: "Grape", swatch: "var(--grape)" },
 ];
+const FREQUENCIES: Frequency[] = ["daily", "weekly", "biweekly", "monthly"];
 
 export default function AddHabitModal({
   onClose,
@@ -22,6 +24,7 @@ export default function AddHabitModal({
   const [name, setName] = useState("");
   const [emoji, setEmoji] = useState("🌱");
   const [color, setColor] = useState<HabitColor>("leaf");
+  const [frequency, setFrequency] = useState<Frequency>("daily");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -37,7 +40,7 @@ export default function AddHabitModal({
       const res = await fetch("/api/habits", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, emoji, color }),
+        body: JSON.stringify({ name, emoji, color, frequency }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -113,6 +116,25 @@ export default function AddHabitModal({
                   outlineOffset: "2px",
                 }}
               />
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-bold">How often?</span>
+          <div className="grid grid-cols-2 gap-2">
+            {FREQUENCIES.map((f) => (
+              <button
+                type="button"
+                key={f}
+                onClick={() => setFrequency(f)}
+                className="pixel-outline rounded-2xl px-2 py-1.5 text-sm font-semibold"
+                style={{
+                  background: frequency === f ? "var(--leaf-bright)" : "var(--paper)",
+                }}
+              >
+                {FREQUENCY_LABEL[f]}
+              </button>
             ))}
           </div>
         </div>

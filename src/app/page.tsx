@@ -3,12 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 import HabitCard from "@/components/HabitCard";
 import AddHabitModal from "@/components/AddHabitModal";
-import { currentStreak, todayKey } from "@/lib/growth";
+import GardenView from "@/components/GardenView";
+import { currentStreak, growthStage, todayKey, hasDoneCurrentPeriod } from "@/lib/growth";
 import type { HabitWithDates } from "@/lib/types";
 
 export default function Home() {
   const [habits, setHabits] = useState<HabitWithDates[] | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [view, setView] = useState<"cards" | "garden">("cards");
 
   useEffect(() => {
     fetch("/api/habits")
@@ -19,10 +21,14 @@ export default function Home() {
 
   const stats = useMemo(() => {
     if (!habits) return null;
-    const today = todayKey();
-    const doneToday = habits.filter((h) => h.dates.includes(today)).length;
-    const longestStreak = habits.reduce((max, h) => Math.max(max, currentStreak(h.dates)), 0);
-    const grownPlants = habits.filter((h) => currentStreak(h.dates) >= 21).length;
+    const doneToday = habits.filter((h) => hasDoneCurrentPeriod(h.dates, h.frequency)).length;
+    const longestStreak = habits.reduce(
+      (max, h) => Math.max(max, currentStreak(h.dates, h.frequency)),
+      0
+    );
+    const grownPlants = habits.filter(
+      (h) => growthStage(currentStreak(h.dates, h.frequency), h.frequency).stage >= 5
+    ).length;
     return { total: habits.length, doneToday, longestStreak, grownPlants };
   }, [habits]);
 
@@ -62,11 +68,30 @@ export default function Home() {
       </header>
 
       {stats && habits && habits.length > 0 && (
-        <div className="w-full max-w-5xl grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <div className="w-full max-w-5xl grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <StatPill emoji="🪴" value={stats.total} label="Plants" />
-          <StatPill emoji="💧" value={`${stats.doneToday}/${stats.total}`} label="Watered today" />
+          <StatPill emoji="💧" value={`${stats.doneToday}/${stats.total}`} label="On track" />
           <StatPill emoji="🔥" value={stats.longestStreak} label="Best active streak" />
           <StatPill emoji="🌳" value={stats.grownPlants} label="Fully bloomed" />
+        </div>
+      )}
+
+      {habits && habits.length > 0 && (
+        <div className="w-full max-w-5xl flex justify-center gap-2 mb-6">
+          <button
+            onClick={() => setView("cards")}
+            className="bubble-btn px-4 py-1.5 text-sm"
+            style={{ background: view === "cards" ? "var(--leaf-bright)" : "var(--paper)" }}
+          >
+            🃏 Cards
+          </button>
+          <button
+            onClick={() => setView("garden")}
+            className="bubble-btn px-4 py-1.5 text-sm"
+            style={{ background: view === "garden" ? "var(--leaf-bright)" : "var(--paper)" }}
+          >
+            🌻 My Garden
+          </button>
         </div>
       )}
 
@@ -85,7 +110,9 @@ export default function Home() {
           </div>
         )}
 
-        {habits && habits.length > 0 && (
+        {habits && habits.length > 0 && view === "garden" && <GardenView habits={habits} />}
+
+        {habits && habits.length > 0 && view === "cards" && (
           <div className="flex flex-wrap gap-4 justify-center">
             {habits.map((h) => (
               <HabitCard key={h.id} habit={h} onToggle={handleToggle} onDelete={handleDelete} />

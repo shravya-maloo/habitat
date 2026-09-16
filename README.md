@@ -1,16 +1,15 @@
 # 🌻 Habitat
 
-Habitat turns your daily habits into a garden. Every time you check off a habit, its plant grows a little more — six stages from a bare seed to an ancient, blooming tree. Miss a day and the plant just waits; your streak resets, but nothing is ever deleted.
-
-Built as a fast, self-contained habit tracker: no sign-up, no external services required to run it locally.
+Habitat turns your habits into a garden. Every time you check off a habit, its plant grows a little more — six stages from a bare seed to an ancient, blooming tree. Miss a period and the plant just waits; your streak resets, but nothing is ever deleted.
 
 ## Features
 
-- 🪴 Create habits with a custom icon and bloom color
+- 🪴 Create habits with a custom icon, bloom color, and frequency (daily / weekly / every 2 weeks / monthly)
 - 💧 One-tap "mark done" for today, toggle it back off if you misclick
-- 🔥 Live current streak + all-time best streak per habit
-- 🌳 Six-stage pixel-art plant growth tied to your streak length (2 / 5 / 10 / 21 / 45 days)
-- 📊 Garden-wide stats: total plants, watered today, longest active streak, fully bloomed count
+- 🔥 Live current streak + all-time best streak, measured in the habit's own unit (days, weeks, biweekly periods, or months)
+- 🌳 Six-stage pixel-art plant growth tied to streak length — thresholds are tuned per frequency so a weekly habit blooms on a similar real-world timeline to a daily one
+- 🌻 **My Garden view** — see every plant growing together in one scene, hover/tap any plant for its name and streak
+- 📊 Garden-wide stats: total plants, on track today, longest active streak, fully bloomed count
 - 🗑️ Soft-delete habits (archived, not destroyed — history is preserved)
 - Bubbly pixel/game-inspired UI, fully responsive
 

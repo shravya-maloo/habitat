@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import PlantSVG from "./PlantSVG";
-import { currentStreak, bestStreak, growthStage, todayKey } from "@/lib/growth";
+import {
+  currentStreak,
+  bestStreak,
+  growthStage,
+  todayKey,
+  hasDoneCurrentPeriod,
+  streakLabel,
+  FREQUENCY_LABEL,
+} from "@/lib/growth";
 import type { HabitWithDates } from "@/lib/types";
 
 const VARIANT_ACCENT: Record<string, string> = {
@@ -25,10 +33,11 @@ export default function HabitCard({
   const [busy, setBusy] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const streak = currentStreak(habit.dates);
-  const best = bestStreak(habit.dates);
-  const { stage, label, nextAt } = growthStage(streak);
+  const streak = currentStreak(habit.dates, habit.frequency);
+  const best = bestStreak(habit.dates, habit.frequency);
+  const { stage, label, nextAt } = growthStage(streak, habit.frequency);
   const doneToday = habit.dates.includes(todayKey());
+  const doneThisPeriod = hasDoneCurrentPeriod(habit.dates, habit.frequency);
   const accent = VARIANT_ACCENT[habit.color] ?? VARIANT_ACCENT.leaf;
 
   async function handleToggle() {
@@ -78,6 +87,10 @@ export default function HabitCard({
         {habit.emoji} {label}
       </span>
 
+      <span className="text-[11px] text-[var(--ink-soft)] font-semibold self-start -mt-1">
+        {FREQUENCY_LABEL[habit.frequency]}
+      </span>
+
       <div className={`w-28 h-32 ${streak > 0 ? "sway" : ""}`}>
         <PlantSVG stage={stage} variant={habit.color} className="w-full h-full" />
       </div>
@@ -87,13 +100,13 @@ export default function HabitCard({
       </h3>
 
       <div className="flex items-center gap-3 text-xs text-[var(--ink-soft)] font-semibold">
-        <span>🔥 {streak} day{streak === 1 ? "" : "s"}</span>
+        <span>🔥 {streakLabel(streak, habit.frequency)}</span>
         <span>🏆 {best}</span>
       </div>
 
       {nextAt !== null && (
         <p className="text-[11px] text-[var(--ink-soft)] -mt-1">
-          {nextAt - streak} day{nextAt - streak === 1 ? "" : "s"} to next stage
+          {streakLabel(nextAt - streak, habit.frequency)} to next stage
         </p>
       )}
 
@@ -101,9 +114,17 @@ export default function HabitCard({
         onClick={handleToggle}
         disabled={busy}
         className="bubble-btn w-full py-2 mt-1 text-sm disabled:opacity-60"
-        style={{ background: doneToday ? "var(--leaf-bright)" : "var(--paper)" }}
+        style={{ background: doneThisPeriod ? "var(--leaf-bright)" : "var(--paper)" }}
       >
-        {doneToday ? "✅ Watered today" : "💧 Mark done"}
+        {habit.frequency === "daily"
+          ? doneToday
+            ? "✅ Watered today"
+            : "💧 Mark done"
+          : doneThisPeriod
+          ? doneToday
+            ? "✅ Watered today"
+            : "✅ Done this period"
+          : "💧 Mark done today"}
       </button>
     </div>
   );

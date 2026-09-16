@@ -29,11 +29,14 @@ async function bootstrap() {
       name TEXT NOT NULL,
       emoji TEXT NOT NULL DEFAULT '🌱',
       color TEXT NOT NULL DEFAULT 'leaf',
+      frequency TEXT NOT NULL DEFAULT 'daily',
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       archived BOOLEAN NOT NULL DEFAULT false,
       sort_order INTEGER NOT NULL DEFAULT 0
     )
   `;
+  // Backfills the column for databases created before frequency existed.
+  await sql`ALTER TABLE habits ADD COLUMN IF NOT EXISTS frequency TEXT NOT NULL DEFAULT 'daily'`;
   await sql`
     CREATE TABLE IF NOT EXISTS completions (
       id SERIAL PRIMARY KEY,

@@ -24,6 +24,9 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
   if (typeof body?.emoji === "string") updates.emoji = body.emoji;
   if (typeof body?.color === "string") updates.color = body.color;
+  if (typeof body?.frequency === "string" && ["daily", "weekly", "biweekly", "monthly"].includes(body.frequency)) {
+    updates.frequency = body.frequency;
+  }
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "Nothing to update" }, { status: 400 });

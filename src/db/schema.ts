@@ -5,6 +5,7 @@ export const habits = pgTable("habits", {
   name: text("name").notNull(),
   emoji: text("emoji").notNull().default("🌱"),
   color: text("color").notNull().default("leaf"),
+  frequency: text("frequency").notNull().default("daily"), // daily | weekly | biweekly | monthly
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   archived: boolean("archived").notNull().default(false),
   sortOrder: integer("sort_order").notNull().default(0),

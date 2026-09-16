@@ -23,6 +23,7 @@ export async function GET() {
 
 const COLORS = ["leaf", "sun", "berry", "sky", "grape"];
 const EMOJIS = ["🌱", "💧", "📚", "🏃", "🧘", "🎨", "🎵", "🥗", "😴", "✍️"];
+const FREQUENCIES = ["daily", "weekly", "biweekly", "monthly"];
 
 export async function POST(req: NextRequest) {
   await ensureReady();
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
 
   const emoji = EMOJIS.includes(body?.emoji) ? body.emoji : "🌱";
   const color = COLORS.includes(body?.color) ? body.color : COLORS[Math.floor(Math.random() * COLORS.length)];
+  const frequency = FREQUENCIES.includes(body?.frequency) ? body.frequency : "daily";
 
   const existing = await db.select().from(habits);
 
@@ -47,6 +49,7 @@ export async function POST(req: NextRequest) {
       name,
       emoji,
       color,
+      frequency,
       sortOrder: existing.length,
     })
     .returning();
