@@ -24,8 +24,17 @@ async function bootstrap() {
   if (bootstrapped) return;
   bootstrapped = true;
   await sql`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      email TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`
     CREATE TABLE IF NOT EXISTS habits (
       id SERIAL PRIMARY KEY,
+      user_id INTEGER,
       name TEXT NOT NULL,
       emoji TEXT NOT NULL DEFAULT '🌱',
       color TEXT NOT NULL DEFAULT 'leaf',
@@ -43,6 +52,11 @@ async function bootstrap() {
   await sql`ALTER TABLE habits ADD COLUMN IF NOT EXISTS harvested_count INTEGER NOT NULL DEFAULT 0`;
   await sql`ALTER TABLE habits ADD COLUMN IF NOT EXISTS pos_x DOUBLE PRECISION NOT NULL DEFAULT 50`;
   await sql`ALTER TABLE habits ADD COLUMN IF NOT EXISTS pos_y DOUBLE PRECISION NOT NULL DEFAULT 50`;
+  // user_id is nullable at the DB level so this migration is non-destructive on
+  // an existing table; the very first person to sign up claims every
+  // previously-unowned habit (see /api/auth/signup) so nothing is orphaned.
+  await sql`ALTER TABLE habits ADD COLUMN IF NOT EXISTS user_id INTEGER`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_habits_user ON habits(user_id)`;
   // Existing rows created before pos_x/pos_y existed all default to the same
   // spot (50,50) — scatter them a bit so old farms don't open with every
   // plant stacked in the center.

@@ -96,7 +96,17 @@ export default function Home() {
 
   return (
     <main className="flex-1 flex flex-col items-center px-4 py-8 sm:py-12">
-      <header className="w-full max-w-5xl flex flex-col items-center text-center gap-2 mb-8">
+      <header className="w-full max-w-5xl flex flex-col items-center text-center gap-2 mb-8 relative">
+        <button
+          onClick={async () => {
+            await fetch("/api/auth/logout", { method: "POST" });
+            window.location.href = "/login";
+          }}
+          className="absolute top-0 right-0 text-xs font-bold text-[var(--ink-soft)] hover:text-[var(--berry)] bubble-btn px-3 py-1.5"
+          style={{ background: "var(--paper)" }}
+        >
+          Log out
+        </button>
         <h1
           className="pixel-title text-2xl sm:text-3xl"
           style={{

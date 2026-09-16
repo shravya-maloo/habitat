@@ -1,7 +1,15 @@
 import { pgTable, serial, text, timestamp, boolean, integer, doublePrecision } from "drizzle-orm/pg-core";
 
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const habits = pgTable("habits", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
   name: text("name").notNull(),
   emoji: text("emoji").notNull().default("🌱"),
   color: text("color").notNull().default("leaf"),
@@ -21,6 +29,7 @@ export const completions = pgTable("completions", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export type User = typeof users.$inferSelect;
 export type Habit = typeof habits.$inferSelect;
 export type NewHabit = typeof habits.$inferInsert;
 export type Completion = typeof completions.$inferSelect;

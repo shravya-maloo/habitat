@@ -1,18 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, ensureReady } from "@/db";
 import { habits, completions } from "@/db/schema";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, and, inArray } from "drizzle-orm";
 import { FLOWER_TYPES } from "@/lib/flowers";
+import { getSessionFromCookies } from "@/lib/auth";
 
 export async function GET() {
   await ensureReady();
+  const session = await getSessionFromCookies();
+  if (!session) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
+
   const allHabits = await db
     .select()
     .from(habits)
-    .where(eq(habits.archived, false))
+    .where(and(eq(habits.userId, session.userId), eq(habits.archived, false)))
     .orderBy(asc(habits.sortOrder), asc(habits.id));
 
-  const allCompletions = await db.select().from(completions);
+  const ids = allHabits.map((h) => h.id);
+  const allCompletions = ids.length
+    ? await db.select().from(completions).where(inArray(completions.habitId, ids))
+    : [];
 
   const result = allHabits.map((h) => ({
     ...h,
@@ -28,6 +35,9 @@ const FREQUENCIES = ["daily", "weekly", "biweekly", "monthly"];
 
 export async function POST(req: NextRequest) {
   await ensureReady();
+  const session = await getSessionFromCookies();
+  if (!session) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
+
   const body = await req.json();
   const name = String(body?.name ?? "").trim();
 
@@ -42,11 +52,12 @@ export async function POST(req: NextRequest) {
   const color = COLORS.includes(body?.color) ? body.color : COLORS[Math.floor(Math.random() * COLORS.length)];
   const frequency = FREQUENCIES.includes(body?.frequency) ? body.frequency : "daily";
 
-  const existing = await db.select().from(habits);
+  const existing = await db.select().from(habits).where(eq(habits.userId, session.userId));
 
   const [created] = await db
     .insert(habits)
     .values({
+      userId: session.userId,
       name,
       emoji,
       color,
