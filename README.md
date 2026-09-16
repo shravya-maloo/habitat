@@ -1,4 +1,4 @@
-# 🌻 Habitat
+# Habitat
 
 Habitat turns your habits into a garden. Every time you check off a habit, its plant grows a little more — six stages from a bare seed to an ancient, blooming tree. Miss a period and the plant just waits; your streak resets, but nothing is ever deleted.
 
@@ -6,7 +6,7 @@ Access it here: https://habitat-sigma-nine.vercel.app/
 
 ## Features
 
-- 🌾 **Farm view only** — one interactive scene with every plant in it; no separate card list, this is the whole app
+- 🌾 **The Farm** — one interactive scene with every plant in it; no separate card list, this is the whole app
 - 🪴 Create habits with a flower type (sunflower, rose, tulip, daisy, lotus, hibiscus — each with its own distinct bloom shape), a petal color, and a frequency (daily / weekly / every 2 weeks / monthly)
 - Interaction model in the farm: **tap a flower to edit it**, **hold and drag to move it**, **drop it on the 🗑️ to remove it** — a small 💧/🧺 badge on each flower logs today's completion or harvests it, kept separate so it never conflicts with editing or dragging
 - 🔥 Live current streak + all-time best streak, measured in the habit's own unit (days, weeks, biweekly periods, or months)
@@ -48,9 +48,3 @@ src/
 
 Two tables: `habits` and `completions` (one row per habit per day it was completed). Streaks and growth stage are derived on the fly from `completions` — nothing is pre-computed or denormalized, so the logic in `src/lib/growth.ts` is the single source of truth and is easy to unit test.
 
-## Roadmap ideas
-
-- User accounts (multi-user support) — the schema has no `userId` yet, but adding one and scoping every query to it is straightforward
-- Weekly/custom-day-of-week habit frequencies (currently every habit is daily)
-- Habit reordering (drag-and-drop) — `sortOrder` column already exists on the schema
-- Reminders / notifications
