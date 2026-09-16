@@ -20,7 +20,6 @@ Habitat turns your habits into a garden. Every time you check off a habit, its p
 - **PostgreSQL** via `postgres` (postgres-js) + **Drizzle ORM** — works with any Postgres, including a free [Neon](https://neon.tech) project
 - Self-hosted Google Fonts (`Press Start 2P`, `Baloo 2`) via `@fontsource`
 
-
 ## Project structure
 
 ```
