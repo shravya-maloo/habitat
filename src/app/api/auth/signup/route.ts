@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, ensureReady } from "@/db";
-import { users, habits } from "@/db/schema";
-import { count, eq, isNull } from "drizzle-orm";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { hashPassword, setSessionCookie } from "@/lib/auth";
 
 function isValidEmail(email: string) {
@@ -26,17 +26,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "An account with that email already exists." }, { status: 409 });
   }
 
-  const [{ value: userCount }] = await db.select({ value: count() }).from(users);
   const passwordHash = await hashPassword(password);
-
   const [created] = await db.insert(users).values({ email, passwordHash }).returning();
 
-  // The very first account claims any habits created before auth existed,
-  // so nobody's existing farm goes missing when this ships.
-  if (Number(userCount) === 0) {
-    await db.update(habits).set({ userId: created.id }).where(isNull(habits.userId));
-  }
-
+  // Every new account starts with a genuinely empty farm — no exceptions.
   await setSessionCookie({ userId: created.id, email: created.email });
 
   return NextResponse.json({ id: created.id, email: created.email }, { status: 201 });
