@@ -57,6 +57,42 @@ async function bootstrap() {
   // previously-unowned habit (see /api/auth/signup) so nothing is orphaned.
   await sql`ALTER TABLE habits ADD COLUMN IF NOT EXISTS user_id INTEGER`;
   await sql`CREATE INDEX IF NOT EXISTS idx_habits_user ON habits(user_id)`;
+
+  // Clean up existing duplicates (created by the exact race condition this
+  // migration fixes) before adding the uniqueness constraint below — archive
+  // all but the oldest habit in each duplicate (user_id, name) group so no
+  // data is destroyed, just hidden the same way any other archive is.
+  await sql`
+    WITH ranked AS (
+      SELECT id, ROW_NUMBER() OVER (PARTITION BY user_id, lower(name) ORDER BY id) AS rn
+      FROM habits
+      WHERE archived = false AND user_id IS NOT NULL
+    )
+    UPDATE habits SET archived = true WHERE id IN (SELECT id FROM ranked WHERE rn > 1)
+  `;
+
+  // Prevents the actual race condition a double-tap/slow-network re-click
+  // causes: two concurrent requests can both pass an application-level
+  // "does this already exist?" check before either has inserted. A real
+  // unique constraint is atomic and closes that window regardless of timing.
+  try {
+    await sql`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_habits_user_name_unique
+      ON habits (user_id, lower(name))
+      WHERE archived = false AND user_id IS NOT NULL
+    `;
+  } catch (err) {
+    console.error("Could not create idx_habits_user_name_unique — duplicate-prevention will rely on the application-level check only.", err);
+  }
+  // Prevents the actual race condition a double-tap/slow-network re-click
+  // causes: two concurrent requests can both pass an application-level
+  // "does this already exist?" check before either has inserted. A real
+  // unique constraint is atomic and closes that window regardless of timing.
+  await sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_habits_user_name_unique
+    ON habits (user_id, lower(name))
+    WHERE archived = false AND user_id IS NOT NULL
+  `;
   // Existing rows created before pos_x/pos_y existed all default to the same
   // spot (50,50) — scatter them a bit so old farms don't open with every
   // plant stacked in the center.

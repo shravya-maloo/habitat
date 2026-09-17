@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { HabitColor, Frequency, HabitWithDates } from "@/lib/types";
 import { FREQUENCY_LABEL } from "@/lib/growth";
 import { FLOWER_TYPES } from "@/lib/flowers";
@@ -37,13 +37,20 @@ export default function HabitModal({
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  // A synchronous guard against double-submit: React's `submitting` state
+  // update is batched and can lag a fast double-click/double-tap by a frame,
+  // which is enough for both clicks to see `submitting === false` and both
+  // fire the request. A ref updates immediately, closing that window.
+  const submitLock = useRef(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submitLock.current) return;
     if (!name.trim()) {
       setError("Give your habit a name first.");
       return;
     }
+    submitLock.current = true;
     setSubmitting(true);
     setError(null);
     try {
@@ -63,6 +70,7 @@ export default function HabitModal({
       else onCreated?.(data);
       onClose();
     } finally {
+      submitLock.current = false;
       setSubmitting(false);
     }
   }
