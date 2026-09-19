@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import PlantSVG from "./PlantSVG";
 import PetalBurst from "./PetalBurst";
 import PixelEmoji from "./PixelEmoji";
@@ -30,6 +30,15 @@ export default function GardenView({
   const containerRef = useRef<HTMLDivElement>(null);
   const trashRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState<number | null>(null);
+  // Touch devices fire a synthetic mouseenter on tap with no matching
+  // mouseleave, which would otherwise leave this tooltip stuck open forever.
+  // Only devices with real hover support (a mouse/trackpad) get the tooltip;
+  // the caption at the bottom of the farm already explains the interaction
+  // model for everyone else.
+  const [supportsHover, setSupportsHover] = useState(false);
+  useEffect(() => {
+    setSupportsHover(window.matchMedia("(hover: hover)").matches);
+  }, []);
   const [dragId, setDragId] = useState<number | null>(null);
   const [overTrash, setOverTrash] = useState(false);
   const [livePos, setLivePos] = useState<Record<number, { x: number; y: number }>>({});
@@ -187,7 +196,7 @@ export default function GardenView({
                 <PixelEmoji emoji={progress.ready ? "🧺" : doneThisPeriod ? "✅" : "💧"} size={16} />
               </button>
 
-              {hovered === h.id && !isDragging && (
+              {hovered === h.id && !isDragging && supportsHover && (
                 <div className="absolute -top-12 left-1/2 -translate-x-1/2 -translate-y-full z-20 bubble-card px-3 py-1.5 whitespace-nowrap text-left pop-in">
                   <p className="text-xs font-bold flex items-center gap-1">
                     <PixelEmoji emoji={h.emoji} size={14} /> {h.name}
@@ -206,7 +215,7 @@ export default function GardenView({
 
         <div
           ref={trashRef}
-          className="absolute bottom-3 right-3 w-14 h-14 rounded-full grid place-items-center"
+          className="absolute bottom-3 left-3 w-14 h-14 rounded-full grid place-items-center"
           style={{
             background: overTrash ? "var(--berry)" : "var(--paper)",
             border: "3px solid rgba(43,33,64,0.15)",

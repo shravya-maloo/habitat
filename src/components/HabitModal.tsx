@@ -89,7 +89,7 @@ export default function HabitModal({
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bubble-card pop-in w-full max-w-sm p-6 flex flex-col gap-4"
+        className="bubble-card pop-in w-full max-w-sm p-6 flex flex-col gap-4 max-h-[90vh] overflow-y-auto"
       >
         <h2 className="text-lg flex items-center justify-center gap-2">
           <PixelEmoji emoji="🌿" size={20} /> {isEdit ? "Edit habit" : "New habit"}
